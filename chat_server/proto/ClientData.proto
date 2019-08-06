@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package Data;
+
+message ClientData
+{
+	int32 user_id = 1;//角色ID
+	string user_name = 2;//角色名字
+}
