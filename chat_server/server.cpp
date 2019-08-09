@@ -23,13 +23,13 @@ server::server(string ip, string port)
 		exit(1);
 	}
 
-	if(listen(socket_fd, 10) < 0)
+	if(listen(socket_fd, 100) < 0)
 	{
 		err_log("fail to listen");
 		exit(1);
 	}
 
-	if((epoll_fd = epoll_create(10)) < 0)
+	if((epoll_fd = epoll_create(65535)) < 0)
 	{
 		err_log("fail to epoll_create");
 		exit(1);
@@ -45,7 +45,7 @@ server::server(string ip, string port)
 		exit(1);
 	}
 	printf("server init end\n");
-	
+
 
 
 
@@ -53,6 +53,14 @@ server::server(string ip, string port)
 
 server::~server()
 {
+	vector<client*>::iterator it;
+	for (it = client_v.begin(); it!=client_v.end();it++)
+	{
+		client* c;
+		close(c->fd);
+		delete c;
+		c = nullptr;
+	}
 	close(socket_fd);
 	close(epoll_fd);
 }
@@ -79,7 +87,7 @@ void server::start()
 				}
 				else
 				{
-					handleRecv(events[n].data.fd);
+					handleRecv(events[n].data.ptr);
 				}
 			}
 		}
@@ -89,61 +97,7 @@ void server::start()
 		cout << e.what() << endl;
 	}
 }
-void server::start1()
-{
-	
-	int nfds, acceptfd;
-	for (;;) {
-		if((nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) < 0)
-		{
-			err_log("fail to epoll_wait");
-		}
-		int ret, n;
-		for (n = 0; n < nfds; ++n) {
-			/* 查看是那个事件发生了*/
-			if(events[n].data.fd == socket_fd) {
-				if((acceptfd = accept(socket_fd,(struct sockaddr *) &serveraddr, &addrlen)) < 0)
-				{
-					err_log("fail to accept");
-				}
-				/*set_non_blocking(acceptfd);  */
-				ev.events = EPOLLIN | EPOLLET;
-				ev.data.fd = acceptfd;
-				if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, acceptfd,&ev) == -1) {
-					err_log("fail to epoll_ctl");
-				}
-				fd_v.push_back(acceptfd);
-			} else {
-				memset(buf, 0, sizeof(buf));
-				acceptfd = events[n].data.fd;
-				if((ret = recv(acceptfd, buf, N, 0)) < 0)
-				{
-					printf("errno = %d \n", errno);
-					continue;
-				}
-				if(ret == 0)
-				{
-					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, acceptfd,NULL) < 0) {
-						err_log("fail to epoll_ctl");
-					}
-					fdRemove(acceptfd);
-					close(acceptfd);
-					continue;
-				}
-				printf("client:%s\n", buf);
-				
-				for(fd_it = fd_v.begin();fd_it!=fd_v.end();fd_it++)
-				{
-					acceptfd = *fd_it;
-					if(send(acceptfd, buf, N, 0) < 0)
-					{
-						err_log("fail to send");
-					}
-				}
-			}
-		}
-	}
-}
+
 void server::handleAccept()
 {
 	try
@@ -155,12 +109,15 @@ void server::handleAccept()
 			err_log("fail to accept");
 			return;
 		}
+		set_non_blocking(wait_fd);
+		client *c = new client(wait_fd);
 		ev.events = EPOLLIN | EPOLLET;
-		ev.data.fd = wait_fd;
+		//ev.data.fd = wait_fd;
+		ev.data.ptr = c;
 		if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, wait_fd,&ev) == -1) {
 			err_log("fail to epoll_ctl");
 		}
-		fd_v.push_back(wait_fd);
+		client_v.push_back(c);
 		cout<<"accept fd:"<<wait_fd<<endl;
 	}
 	catch(exception& e)
@@ -168,47 +125,95 @@ void server::handleAccept()
 		cout<<e.what()<<endl;
 	}
 }
-void server::handleRecv(int handle_fd)
+void server::handleRecv(void *ptr)
 {
 	try
 	{
+		client *c=(client *)ptr;
+		int handle_fd = c->fd;
 		int ret;
-		memset(buf, 0, sizeof(buf));
-		if((ret = recv(handle_fd, buf, N, 0)) < 0)
+		while(1)
 		{
-			cout<<"recv err errno:"<<errno<<endl;
-			return;	
-		}
-		if(ret == 0)
-		{
-			if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, handle_fd, NULL)<0)
+			memset(buf, 0, sizeof(buf));
+			if((ret = recv(handle_fd, buf, N, 0)) < 0)
 			{
-				err_log("fail to epoll_ctl");
+				if(EAGAIN == errno)
+				{
+					break;
+				}
+				else if(ECONNRESET == errno)
+				{
+					clientRemove(handle_fd);
+					close(handle_fd);
+					cout<<"fd:"<<handle_fd<<" close"<<endl;
+					break;
+				}
+				cout<<"recv err errno:"<<errno<<endl;
+				return;	
 			}
-			fdRemove(handle_fd);
-			close(handle_fd);
-			return;	
-		}
-		cout<<"client:"<<(char *)buf<<endl;
-		string str;
-		Data::ClientData data;
-		data.set_user_name("闫明飞");
-		data.set_user_id(111200);
-		data.SerializeToString(&str);  
-		char bts[str.length()];
-		strcpy(bts, str.c_str());  
+			if(ret == 0)
+			{
+				if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, handle_fd, NULL)<0)
+				{
+					err_log("fail to epoll_ctl");
+				}
+				clientRemove(handle_fd);
+				close(handle_fd);
+				return;	
+			}
+			c->tcp_packet->WriteData(c,buf, ret);
+			/*
+			buf[ret]='\0';
+			int length;
+			int cmd;
+			memcpy(&length, &buf[0], sizeof(length));           // type [0,4)
+			memcpy(&cmd, &buf[4], sizeof(cmd));       // length [4,8)
+			string str = &buf[8];
+			Data::ClientData data;
+			data.ParseFromString(str);  
+			cout<<"fd:"<<handle_fd<<" len:"<<length<<" cmd:"<<cmd<<" userID: "<<data.user_id()<<" userName: "<<data.user_name()<<endl;
 
-		for(int i=0;i<fd_v.size();i++)
-		{
-			int fd = fd_v[i];
-			if(send(fd, bts, sizeof(bts), 0) < 0)
+
+			//		data.set_user_name("闫明飞");
+			//		data.set_user_id(111200);
+			data.SerializeToString(&str);  
+			char bts[str.length()+8];
+			//strcpy(bts, str.c_str()); 
+			int type = 1000;
+			length = 8 + strlen(str.c_str());	
+			memcpy(&bts[0], &length, sizeof(type));           // type [0,4)
+			memcpy(&bts[4], &type, sizeof(length));       // length [4,8)
+			memcpy(&bts[8], str.c_str(), strlen(str.c_str()));
+
+			for(int i=0;i<client_v.size();i++)
 			{
-				err_log("fail to send");
+				client* ct = client_v[i];
+				if(send(ct->fd, bts, sizeof(bts), 0) < 0)
+				{
+					err_log("fail to send");
+				}
 			}
+			*/
 		}
 	}
 	catch(exception& e)
 	{
 		cout<<e.what()<<endl;
 	}
+}
+
+void server::set_non_blocking(int acceptfd)
+{
+	int flags ;
+	flags = fcntl(acceptfd, F_GETFL, 0);
+	flags |= O_NONBLOCK;
+	fcntl(acceptfd, F_SETFL, flags);
+}
+
+void server::set_blocking(int acceptfd)
+{
+	int flags ;
+	flags = fcntl(acceptfd, F_GETFL, 0);
+	flags |= ~O_NONBLOCK;
+	fcntl(acceptfd, F_SETFL, flags);
 }

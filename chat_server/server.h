@@ -1,3 +1,7 @@
+
+#ifndef _SERVER_H
+#define _SERVER_H
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -10,15 +14,17 @@
 #include <vector>
 //#include <netinet/in.h>
 #include <unistd.h>
-//#include <fcntl.h>
+#include <fcntl.h>
 //#include <sys/resource.h>
 //#include <errno.h>
 #include "data/ClientData.pb.h"
+#include "tcp/TCPPacket.h"
+#include "logic/client.h"
 
 
 using namespace std;
 #define MAX_EVENTS 10000
-#define N 128
+#define N 65535
 
 #define  err_log(errlog) cout<<errlog<<endl;
 //#define  err_log(errlog) do{perror(errlog); exit(1);}while(0)
@@ -38,7 +44,9 @@ class server
 			return epoll_fd;
 		}
 		void start();
-		void start1();
+		void set_non_blocking(int acceptfd);//设置非阻塞模式
+		void set_blocking(int acceptfd);//设置阻塞模式
+
 	private:
 		string m_ip;
 		string m_port;
@@ -46,27 +54,29 @@ class server
 		int epoll_fd;
 		char buf[N];
 		struct epoll_event ev, events[MAX_EVENTS];
-	   	
+
 		struct sockaddr_in serveraddr, clientaddr;
 		socklen_t addrlen = sizeof(struct sockaddr);
-		
-		vector<int> fd_v;
-		vector<int>::iterator fd_it;
-		
-		
-		void fdRemove(int fd)
+
+		vector<client*> client_v;
+		vector<client*>::iterator client_it;
+
+
+		void clientRemove(int fd)
 		{
-			for(fd_it = fd_v.begin();fd_it!=fd_v.end();fd_it++)
+			for(client_it = client_v.begin();client_it!=client_v.end();client_it++)
 			{
-				if (fd == *fd_it)
+				client* c = *client_it;
+				if (fd == c->fd)
 				{
-					fd_v.erase(fd_it);
+					client_v.erase(client_it);
 					break;
 				}
 			}
 		}
 
 		void handleAccept();
-		void handleRecv(int handle_fd);
+		void handleRecv(void *c);
 
 };
+#endif
