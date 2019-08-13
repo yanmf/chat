@@ -1,6 +1,6 @@
 ﻿namespace ChatClient
 {
-    partial class Form1
+    partial class Login
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,12 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.user_test = new System.Windows.Forms.TextBox();
             this.password_test = new System.Windows.Forms.TextBox();
             this.create_user = new System.Windows.Forms.Button();
-            this.login = new System.Windows.Forms.Button();
+            this.login_b = new System.Windows.Forms.Button();
             this.label_user = new System.Windows.Forms.Label();
             this.label_password = new System.Windows.Forms.Label();
+            this.user_name_err = new System.Windows.Forms.ErrorProvider(this.components);
+            this.user_pwd_err = new System.Windows.Forms.ErrorProvider(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.user_name_err)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.user_pwd_err)).BeginInit();
             this.SuspendLayout();
             // 
             // user_test
@@ -62,16 +67,17 @@
             this.create_user.TabIndex = 2;
             this.create_user.Text = "注册账号";
             this.create_user.UseVisualStyleBackColor = true;
+            this.create_user.Click += new System.EventHandler(this.create_user_Click);
             // 
-            // login
+            // login_b
             // 
-            this.login.Location = new System.Drawing.Point(317, 194);
-            this.login.Name = "login";
-            this.login.Size = new System.Drawing.Size(100, 23);
-            this.login.TabIndex = 3;
-            this.login.Text = "登录";
-            this.login.UseVisualStyleBackColor = true;
-            this.login.Click += new System.EventHandler(this.login_Click);
+            this.login_b.Location = new System.Drawing.Point(317, 194);
+            this.login_b.Name = "login_b";
+            this.login_b.Size = new System.Drawing.Size(100, 23);
+            this.login_b.TabIndex = 3;
+            this.login_b.Text = "登录";
+            this.login_b.UseVisualStyleBackColor = true;
+            this.login_b.Click += new System.EventHandler(this.login_Click);
             // 
             // label_user
             // 
@@ -92,19 +98,29 @@
             this.label_password.TabIndex = 5;
             this.label_password.Text = "密码：";
             // 
-            // Form1
+            // user_name_err
+            // 
+            this.user_name_err.ContainerControl = this;
+            // 
+            // user_pwd_err
+            // 
+            this.user_pwd_err.ContainerControl = this;
+            // 
+            // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 449);
             this.Controls.Add(this.label_password);
             this.Controls.Add(this.label_user);
-            this.Controls.Add(this.login);
+            this.Controls.Add(this.login_b);
             this.Controls.Add(this.create_user);
             this.Controls.Add(this.password_test);
             this.Controls.Add(this.user_test);
-            this.Name = "Form1";
+            this.Name = "Login";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.user_name_err)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.user_pwd_err)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -115,9 +131,11 @@
         private System.Windows.Forms.TextBox user_test;
         private System.Windows.Forms.TextBox password_test;
         private System.Windows.Forms.Button create_user;
-        private System.Windows.Forms.Button login;
+        private System.Windows.Forms.Button login_b;
         private System.Windows.Forms.Label label_user;
         private System.Windows.Forms.Label label_password;
+        private System.Windows.Forms.ErrorProvider user_name_err;
+        private System.Windows.Forms.ErrorProvider user_pwd_err;
     }
 }
 
