@@ -21,7 +21,7 @@
 #include "tcp/TCPPacket.h"
 #include "logic/client.h"
 #include "logic/xmlManager.h"
-#include "redis/redisPool.h"
+#include "manager.h"
 
 
 using namespace std;
@@ -69,7 +69,6 @@ class server
 		int redis_port;
 		string redis_password;
 		int redis_pool_count;
-		RedisPoll *redis_poll;
 
 
 		void clientRemove(int fd)

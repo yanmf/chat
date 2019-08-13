@@ -1,1 +1,1 @@
-nohup /root/code/c++/chat/chat_server/chat_server &
+nohup  /root/code/c++/chat/chat_server/chat_server &

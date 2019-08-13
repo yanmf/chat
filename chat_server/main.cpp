@@ -1,12 +1,11 @@
-#include "server.h"
+#include "manager.h"
 
 int main()
 {
-	server * server_p = new server();
-
-	server_p->start();
-
-	delete server_p;
-	server_p = nullptr;
+	MANAGER->init();
+	
+	MANAGER->start();
+	
+	MANAGER->close();
 	return 0;
 }
