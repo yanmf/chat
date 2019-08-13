@@ -2,7 +2,7 @@
 
 int main()
 {
-	server * server_p = new server("172.19.123.155", "4402");
+	server * server_p = new server();
 
 	server_p->start();
 

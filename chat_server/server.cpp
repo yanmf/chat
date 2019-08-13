@@ -1,9 +1,8 @@
 #include"server.h"
-server::server(string ip, string port)
+server::server()
 {
-	m_ip = ip;
-	m_port = port;
-	cout<<"ip:"<<ip<<" "<<"m_port:"<<m_port<<endl;
+	load_config();
+	cout<<"ip:"<<m_ip<<" "<<"m_port:"<<m_port<<endl;
 
 	addrlen = sizeof(struct sockaddr);
 
@@ -163,15 +162,15 @@ void server::handleRecv(void *ptr)
 			}
 			c->tcp_packet->WriteData(c,buf, ret);
 			/*
-			buf[ret]='\0';
-			int length;
-			int cmd;
-			memcpy(&length, &buf[0], sizeof(length));           // type [0,4)
-			memcpy(&cmd, &buf[4], sizeof(cmd));       // length [4,8)
-			string str = &buf[8];
-			Data::ClientData data;
-			data.ParseFromString(str);  
-			cout<<"fd:"<<handle_fd<<" len:"<<length<<" cmd:"<<cmd<<" userID: "<<data.user_id()<<" userName: "<<data.user_name()<<endl;
+			   buf[ret]='\0';
+			   int length;
+			   int cmd;
+			   memcpy(&length, &buf[0], sizeof(length));           // type [0,4)
+			   memcpy(&cmd, &buf[4], sizeof(cmd));       // length [4,8)
+			   string str = &buf[8];
+			   Data::ClientData data;
+			   data.ParseFromString(str);  
+			   cout<<"fd:"<<handle_fd<<" len:"<<length<<" cmd:"<<cmd<<" userID: "<<data.user_id()<<" userName: "<<data.user_name()<<endl;
 
 
 			//		data.set_user_name("闫明飞");
@@ -187,11 +186,11 @@ void server::handleRecv(void *ptr)
 
 			for(int i=0;i<client_v.size();i++)
 			{
-				client* ct = client_v[i];
-				if(send(ct->fd, bts, sizeof(bts), 0) < 0)
-				{
-					err_log("fail to send");
-				}
+			client* ct = client_v[i];
+			if(send(ct->fd, bts, sizeof(bts), 0) < 0)
+			{
+			err_log("fail to send");
+			}
 			}
 			*/
 		}
@@ -217,3 +216,45 @@ void server::set_blocking(int acceptfd)
 	flags |= ~O_NONBLOCK;
 	fcntl(acceptfd, F_SETFL, flags);
 }
+
+bool server::load_config()
+{
+	try
+	{
+		char *path = new char[100]; 
+		XML_MANAGER->getResPath((char*)"AppConfig.xml", path);
+
+		TiXmlDocument doc = XML_MANAGER->load(path);
+		TiXmlElement* ele = XML_MANAGER->getElements(doc,"Config");
+		TiXmlElement* server_node = XML_MANAGER->getElementValue(ele,(char*)"Server");
+
+		TiXmlElement* redis_node = XML_MANAGER->getElementValue(ele,(char*)"Redis");
+		const char*ser_ip = XML_MANAGER->getAttributeToStr(server_node, (char*)"IP");
+		const char* ser_port = XML_MANAGER->getAttributeToStr(server_node, (char*)"Port");
+
+		const char*red_ip = XML_MANAGER->getAttributeToStr(redis_node, (char*)"IP");
+		int red_port = XML_MANAGER->getAttributeToInt(redis_node, (char*)"Port");
+		const char*red_pass = XML_MANAGER->getAttributeToStr(redis_node, (char*)"Password");
+		int red_count = XML_MANAGER->getAttributeToInt(redis_node, (char*)"Count");
+		m_ip = ser_ip;
+		m_port = ser_port;
+		redis_ip = red_ip;
+		redis_port = red_port;
+		redis_password = red_pass;
+		redis_pool_count = red_count;
+		cout<<m_ip<<" "<<m_port<<endl;
+		cout<<redis_ip<<" "<<redis_port<<" "<<red_pass<<endl;
+		redis_poll = new RedisPoll();
+		redis_poll->init(redis_pool_count,redis_ip,redis_port,redis_password);
+
+		delete[] path;
+		delete redis_node;
+		delete server_node;
+		delete ele;
+	}
+	catch(exception& e)
+	{
+		cout<<e.what()<<endl;
+	}
+}
+

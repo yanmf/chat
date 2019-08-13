@@ -20,6 +20,8 @@
 #include "data/ClientData.pb.h"
 #include "tcp/TCPPacket.h"
 #include "logic/client.h"
+#include "logic/xmlManager.h"
+#include "redis/redisPool.h"
 
 
 using namespace std;
@@ -33,7 +35,7 @@ class server
 {
 	public:
 
-		server(string ip, string port);
+		server();
 		~server();
 		int getSocketFd()
 		{
@@ -46,6 +48,8 @@ class server
 		void start();
 		void set_non_blocking(int acceptfd);//设置非阻塞模式
 		void set_blocking(int acceptfd);//设置阻塞模式
+
+		bool load_config();
 
 	private:
 		string m_ip;
@@ -60,6 +64,12 @@ class server
 
 		vector<client*> client_v;
 		vector<client*>::iterator client_it;
+
+		string redis_ip;
+		int redis_port;
+		string redis_password;
+		int redis_pool_count;
+		RedisPoll *redis_poll;
 
 
 		void clientRemove(int fd)

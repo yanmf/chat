@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Config>	
+	<Server IP="172.19.123.155" Port="4402"/>
+	<Redis IP="127.0.0.1" Port="4400" Password="ymf062900" Count="10"/>
+</Config>
