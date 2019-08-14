@@ -1,3 +1,5 @@
+#ifndef _DEFINE_H
+#define _DEFINE_H
 
 #define DECLARE_SINGLETON(class_name); \
 	public: \
@@ -16,6 +18,5 @@
 		return instance_; \
 	} \
 
-class client;
-typedef bool (*HanderCmd)(client*, char*,int,int);
 
+#endif

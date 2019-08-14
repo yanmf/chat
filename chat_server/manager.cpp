@@ -7,11 +7,14 @@ manager::manager()
 {
 	m_server = nullptr;
 	redis_poll = nullptr;
+	user_creater = nullptr;
 }
 
 void manager::init()
 {
 	m_server = new server();
+	redis_poll = new RedisPoll();
+	user_creater = new UserCreater();
 }
 
 void manager::close()
@@ -25,6 +28,11 @@ void manager::close()
 	{
 		delete redis_poll;
 		redis_poll = nullptr;
+	}
+	if(user_creater)
+	{
+		delete user_creater;
+		user_creater=nullptr;
 	}
 }
 

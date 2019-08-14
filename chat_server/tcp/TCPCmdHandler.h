@@ -1,4 +1,3 @@
-
 #ifndef _TCP_CMD_HANDLER
 #define _TCP_CMD_HANDLER
 
@@ -6,6 +5,7 @@
 #include <map>
 #include "../logic/client.h"
 #include "../define.h"
+#include "HandlerCmd.h"
 
 using namespace std;
 enum MSGCMDS
@@ -22,12 +22,12 @@ class TcpCmdHandler
 	public:
 		TcpCmdHandler();
 		virtual ~TcpCmdHandler();
-		void AddMsgListener(MSGCMDS, HanderCmd);
-		bool HanderCmdMsg(void *,char*,int,int);
+		void AddMsgListener(MSGCMDS, IHandlerCmd*);
+		bool HandlerCmdMsg(void *,char*,int,int);
 	
 	private:
-		map<MSGCMDS, HanderCmd> _HanderCmdMap;
-		HanderCmd FindHanderCmd(MSGCMDS);
+		map<MSGCMDS, IHandlerCmd*> _HandlerCmdMap;
+		IHandlerCmd* FindHandlerCmd(MSGCMDS);
 };
 
 #define TCP_CMD_HANDLER TcpCmdHandler::instance()

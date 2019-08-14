@@ -6,12 +6,17 @@ TCPPacket::TCPPacket()
 	header_data = new char[TCP_HEADER_SIZE]();
 	is_waiting_data = false;
 	header_size = 0;
+	msg_cmd = 0;
+	packet_size;
+	data_size = 0;
 }
 
 TCPPacket:: ~TCPPacket()
 {
 	delete[] data;
 	data = nullptr;
+	delete[] header_data;
+	header_data = nullptr;
 }
 
 
@@ -55,7 +60,7 @@ bool TCPPacket::WriteData(void*c, char* buffer, int count)
 		{
 			//处理逻辑
 		//	cout<<" len:"<<packet_size<<" cmd:"<<msg_cmd<<endl;
-			TCP_CMD_HANDLER->HanderCmdMsg(c, data, data_size, msg_cmd);
+			TCP_CMD_HANDLER->HandlerCmdMsg(c, data, data_size, msg_cmd);
 		}
 		packet_size = 0;
 		header_size = 0;

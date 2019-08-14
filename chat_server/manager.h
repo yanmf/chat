@@ -2,11 +2,13 @@
 #ifndef _MANAGER_H
 #define _MANAGER_H
 
+#include "logic/user/UserCreater.h"
 #include "define.h"
 #include "server.h"
 #include "redis/redisPool.h"
 
 class server;
+class UserCreater;
 class manager
 {
 	DECLARE_SINGLETON(manager);
@@ -18,6 +20,7 @@ class manager
 
 	server* m_server;
 	RedisPoll* redis_poll;
+	UserCreater* user_creater;
 };
 
 

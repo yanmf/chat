@@ -12,17 +12,17 @@ TcpCmdHandler::~TcpCmdHandler()
 
 }
 
-void TcpCmdHandler::AddMsgListener(MSGCMDS cmd, HanderCmd hander_cmd)
+void TcpCmdHandler::AddMsgListener(MSGCMDS cmd, IHandlerCmd* handler_cmd)
 {
-	_HanderCmdMap[cmd] = hander_cmd;
+	_HandlerCmdMap[cmd] = handler_cmd;
 }
 
-HanderCmd TcpCmdHandler::FindHanderCmd(MSGCMDS cmd)
+IHandlerCmd *TcpCmdHandler::FindHandlerCmd(MSGCMDS cmd)
 {
 	    //查找元素
-	map<MSGCMDS, HanderCmd>::iterator iter1;
-	iter1 = _HanderCmdMap.find(cmd);
-	if(iter1 == _HanderCmdMap.end())
+	map<MSGCMDS, IHandlerCmd*>::iterator iter1;
+	iter1 = _HandlerCmdMap.find(cmd);
+	if(iter1 == _HandlerCmdMap.end())
 	{
 		return nullptr;
 	}
@@ -33,15 +33,15 @@ HanderCmd TcpCmdHandler::FindHanderCmd(MSGCMDS cmd)
 	return nullptr;
 }
 
-bool TcpCmdHandler::HanderCmdMsg(void*user, char* buf, int count, int cmd)
+bool TcpCmdHandler::HandlerCmdMsg(void*user, char* buf, int count, int cmd)
 {
 	client* c = (client*)user;
 	MSGCMDS type = MSGCMDS(cmd & 0xFF00);
-	HanderCmd handerCmd = FindHanderCmd(type);
-	if(!handerCmd)
+	IHandlerCmd* handlerCmd = FindHandlerCmd(type);
+	if(!handlerCmd)
 	{
-		std::cout<<"find HanderCmd error cmd:"<<type<<endl;
+		std::cout<<"find HandlerCmd error cmd:"<<type<<endl;
 		return false;
 	}
-	return handerCmd(c,buf,count,cmd);
+	return handlerCmd->HandlerCmd(c,buf,count,cmd & 0x00FF);
 }
