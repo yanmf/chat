@@ -31,6 +31,8 @@ namespace ChatClient
 
         public void InitTcpClient()
         {
+            UserCreateManager.getInstance().Init();
+
             Connect();
             CreateReceiveThread();
         }

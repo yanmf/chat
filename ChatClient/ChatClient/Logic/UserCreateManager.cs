@@ -20,6 +20,10 @@ namespace ChatClient
         {
             return instance;
         }
+        public void Init()
+        {
+
+        }
 
         private UserCreateManager()
         {
@@ -35,7 +39,7 @@ namespace ChatClient
             switch (nID)
             {
                 case (int)CREATECMDS.CREATE:
-                    UserCreateRep userCreate = UserCreateRep.Parser.ParseFrom(data);
+                    UserCreateRep userCreate = UserCreateRep.Parser.ParseFrom(data, 0, count);
                     if (userCreate != null)
                     {
                         return HandleCreateCmd(userCreate);

@@ -48,6 +48,7 @@
             this.user_test.Name = "user_test";
             this.user_test.Size = new System.Drawing.Size(100, 21);
             this.user_test.TabIndex = 0;
+            this.user_test.Text = "yanmf";
             // 
             // password_test
             // 
@@ -58,6 +59,7 @@
             this.password_test.ShortcutsEnabled = false;
             this.password_test.Size = new System.Drawing.Size(100, 21);
             this.password_test.TabIndex = 1;
+            this.password_test.Text = "123456";
             // 
             // create_user
             // 
