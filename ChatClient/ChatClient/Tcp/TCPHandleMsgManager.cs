@@ -4,8 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatClient.Tcp
+namespace ChatClient
 {
+    enum MSGCMDS
+    {
+        CMD_LOGIN       =       0x100,//登录
+        CMD_CREATE      =       0x200,//注册
+        CMD_CHAT        =       0x300,//聊天
+        CMD_FRIEND      =       0x400,//好友
+    }
     public class TCPHandleMsgManager
     {
         /// <summary>
@@ -25,14 +32,14 @@ namespace ChatClient.Tcp
         /// <returns></returns>
         public static bool HandleMsg(int nID, byte[] data, int count)
         {
-            TCPHandleMsgDelegate msgDelegate = FindMsgDelegate(nID);
+            TCPHandleMsgDelegate msgDelegate = FindMsgDelegate(nID & 0xff00);
             if (msgDelegate == null)
             {
                 //未注册得时间
                 return false;
             }
 
-            return msgDelegate(nID, data, count);
+            return msgDelegate(nID & 0x00ff, data, count);
         }
 
         public static TCPHandleMsgDelegate FindMsgDelegate(int nID)

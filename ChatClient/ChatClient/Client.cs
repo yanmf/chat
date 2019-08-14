@@ -8,11 +8,11 @@ namespace ChatClient
 {
     public class Client
     {
-        private string m_user_id = "";
+        private string m_user_name = "";
         private string m_password = "";
-        public Client(string user_id, string password)
+        public Client(string user_name, string password)
         {
-            m_user_id = user_id;
+            m_user_name = user_name;
             password = m_password;
         }
         public void LogOut()

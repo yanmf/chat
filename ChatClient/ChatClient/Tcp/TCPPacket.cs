@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatClient.Tcp
+namespace ChatClient
 {
     public class TCPPacket
     {
@@ -97,7 +97,7 @@ namespace ChatClient.Tcp
         /// <summary>
         /// 命令头缓冲
         /// </summary>
-        private byte[] CmdHeaderBuffer = new byte[6];
+        private byte[] CmdHeaderBuffer = new byte[8];
 
         /// <summary>
         /// 已经接收到的命令头的大小
@@ -197,7 +197,7 @@ namespace ChatClient.Tcp
 
                     //接收的字节归0
                     PacketDataHaveSize = 0;
-                    _PacketDataSize -= 2; //减去命令的长度
+                    _PacketDataSize -= 8; //减去命令的长度
 
                     //接收数据(递归实现, 简单)
                     return WriteData(buffer, offset, count);

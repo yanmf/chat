@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ChatClient.Tcp
+namespace ChatClient
 {
     public class TCPClientManager
     {
@@ -31,6 +31,8 @@ namespace ChatClient.Tcp
 
         public void InitTcpClient()
         {
+            UserCreateManager.getInstance().Init();
+
             Connect();
             CreateReceiveThread();
         }
@@ -87,6 +89,21 @@ namespace ChatClient.Tcp
             _Socket.Connect(ipe);
         }
 
-
+        public bool SendData(TCPOutPacket tcpOutPacket)
+        {
+            try
+            {
+                int ret = _Socket.Send(tcpOutPacket.GetPacketBytes());
+                if (ret > 0)
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.WriteExceptionEx("SendData(TCPOutPacket tcpOutPacket)", ex);
+            }
+            return false;
+        }
     }
 }
