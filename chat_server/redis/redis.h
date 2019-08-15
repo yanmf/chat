@@ -25,12 +25,27 @@ class Redis
 		void getString(const string & key, int & value);
 		void getString(const string & key, float & value);
 
+
+	public:
+		/*
+		HEXISTS hash field
+		判断 哈希表中是否存在hash field字段
+		*/
+		bool isExists(const string& hash, const string& key);
+		/*
+		 * HSET hash field value
+		 * 添加哈希表键值对
+		 * 已存在修改value
+		 * */
+		void hsetString(const string& hash, const string& key,const string& value);
+
+
 	private:
 		void getString(const string & key);
 	private:
 		void freeReply();
 		bool isError();
-		void command(const string& data);
+		bool command(const string& data);
 	private:
 		redisContext * _context;
 		redisReply * _reply;

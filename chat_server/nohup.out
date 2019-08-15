@@ -10,38 +10,48 @@
 127.0.0.1-4400
 127.0.0.1-4400
 127.0.0.1-4400
-ip:172.19.123.155 m_port:4402
-fail to bind
-172.19.123.155 4402
-127.0.0.1 4400 ymf062900
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-ip:172.19.123.155 m_port:4402
-fail to bind
-172.19.123.155 4402
-127.0.0.1 4400 ymf062900
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
-127.0.0.1-4400
+redis pool size:10 &REDIS:0x806638
 ip:172.19.123.155 m_port:4402
 server init end
 accept fd:15
+creater success
+user_name:yanmf user_pwd123456
+creater success
+user_name:yanmf user_pwd123456
+creater success
+user_name:yanmf user_pwd123456
+fd:15 close
+172.19.123.155 4402
+127.0.0.1 4400 ymf062900
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+127.0.0.1-4400
+redis pool size:10 &REDIS:0x148f638
+ip:172.19.123.155 m_port:4402
+server init end
 accept fd:15
 user_name:yanmf user_pwd123456
+creater success
+user_name:yanmf1 user_pwd123456
+user_name:yanmf1 user_pwd123456
+fd:15 close
+accept fd:15
+user_name:yanmf user_pwd123456
+creater success
+user_name:yanmf2 user_pwd123456
+user_name:yanmf2 user_pwd123456
+fd:15 close
+accept fd:15
+fd:15 close
+accept fd:15
+accept fd:15
+accept fd:15
 fd:15 close
 accept fd:15

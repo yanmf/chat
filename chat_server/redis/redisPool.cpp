@@ -47,3 +47,8 @@ void RedisPoll::push(Redis* conn)
 		pool.push(conn);
 	}
 }
+
+int RedisPoll::size()
+{
+	return pool.size();
+}

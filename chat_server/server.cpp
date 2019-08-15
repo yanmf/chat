@@ -244,8 +244,9 @@ bool server::load_config()
 		redis_pool_count = red_count;
 		cout<<m_ip<<" "<<m_port<<endl;
 		cout<<redis_ip<<" "<<redis_port<<" "<<red_pass<<endl;
-		REDIS_MANAGER = new RedisPoll();
+
 		REDIS_MANAGER->init(redis_pool_count,redis_ip,redis_port,redis_password);
+		cout<<"redis pool size:"<<REDIS_MANAGER->size()<<" &REDIS:"<<&REDIS_MANAGER<<endl;
 
 		delete[] path;
 		delete redis_node;

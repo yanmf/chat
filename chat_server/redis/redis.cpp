@@ -37,17 +37,20 @@ void Redis::disConnect()
 	cout << "redis disConnect success" << endl;
 }
 
-void Redis::command(const string& data)
+bool Redis::command(const string& data)
 {
 	freeReply();
 	_reply = (redisReply*)::redisCommand(_context, data.c_str());
 	if(!isError())
 	{
+		return true;
+		/*
 		if (!(_reply->type == REDIS_REPLY_STATUS && strcasecmp(_reply->str,"OK") == 0))
 		{
-			cout << "command error data:" <<data << endl;
 		}
+		*/
 	}
+	return false;
 }
 
 void Redis::setString(const string & key, const string & value)
@@ -117,6 +120,38 @@ bool Redis::isError()
 		return true;
 	}
 	return false;
+}
+
+bool Redis::isExists(const string& hash, const string& key)
+{
+	stringstream ss;
+	ss << "HEXISTS " << hash << " "<< key;
+	string com;
+	getline(ss, com);
+
+	if(!command(com))
+	{
+		return false;
+	}
+	if(!isError() && _reply->type == REDIS_REPLY_INTEGER)
+	{
+		int value = (int)(_reply->integer);
+		if(value)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Redis::hsetString(const string& hash, const string& key, const string& value)
+{
+	stringstream ss;
+	ss << "HSET " << hash << " "<< key <<" "<<value;
+	string com;
+	getline(ss, com);
+
+	command(com);
 }
 /*
 int main()

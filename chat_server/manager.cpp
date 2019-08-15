@@ -12,8 +12,8 @@ manager::manager()
 
 void manager::init()
 {
-	m_server = new server();
 	redis_poll = new RedisPoll();
+	m_server = new server();
 	user_creater = new UserCreater();
 }
 

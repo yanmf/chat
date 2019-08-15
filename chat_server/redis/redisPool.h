@@ -15,6 +15,7 @@ class RedisPoll
 		void init(const int& count, const string& ip, const int& port, const string& pwd);
 		Redis* pop();
 		void push(Redis* conn);
+		int size();
 };
 
 
